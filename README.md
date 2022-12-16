@@ -1,6 +1,4 @@
-[![Gittens](http://gittens.r15.railsrumble.com//badge/Botffy/polyskel)](http://gittens.r15.railsrumble.com/gitten/Botffy/polyskel)
-
-# Polyskel
+# Polyskel (zero-dependency modification)
 
 <img src="doc/example.png" alt="A straight skeleton"/>
 
@@ -15,8 +13,8 @@ For a modern and excellent overview of the topic please refer to Stefan Huber's 
 ## Installation and prerequisites
 
 You will need Python 3.8.1.
-Download the repo and install using pip: `pip install -r requirements.txt`.
-We use `euclid3` for geometry computations, and the demo uses `Pillow` to display the images.
+~~Download the repo and install using pip: `pip install -r requirements.txt`.~~
+~~We use `euclid3` for geometry computations, and the demo uses `Pillow` to display the images.~~
 
 ## Demo
 

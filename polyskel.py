@@ -1,16 +1,193 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
-Implementation of the straight skeleton algorithm as described by Felkel and Obdržálek in their 1998 conference paper Straight skeleton implementation.
-"""
+Implementation of the straight skeleton algorithm as described by Felkel and 
+Obdržálek in their 1998 conference paper Straight skeleton implementation.
 
-import logging
-import heapq
-from euclid3 import *
+Original author:
+	Ármin Scipiades
+
+Original repo:
+	https://github.com/Botffy/polyskel
+
+Modified by:
+	Celestial Phineas, to make it zero-dependency
+
+This modified version can be retrieved here, under LGPL-3.0 (this file only):
+	https://github.com/celestialphineas/polyskel
+
+                   GNU LESSER GENERAL PUBLIC LICENSE
+                       Version 3, 29 June 2007
+
+ Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+
+  This version of the GNU Lesser General Public License incorporates
+the terms and conditions of version 3 of the GNU General Public
+License, supplemented by the additional permissions listed below.
+
+  0. Additional Definitions.
+
+  As used herein, "this License" refers to version 3 of the GNU Lesser
+General Public License, and the "GNU GPL" refers to version 3 of the GNU
+General Public License.
+
+  "The Library" refers to a covered work governed by this License,
+other than an Application or a Combined Work as defined below.
+
+  An "Application" is any work that makes use of an interface provided
+by the Library, but which is not otherwise based on the Library.
+Defining a subclass of a class defined by the Library is deemed a mode
+of using an interface provided by the Library.
+
+  A "Combined Work" is a work produced by combining or linking an
+Application with the Library.  The particular version of the Library
+with which the Combined Work was made is also called the "Linked
+Version".
+
+  The "Minimal Corresponding Source" for a Combined Work means the
+Corresponding Source for the Combined Work, excluding any source code
+for portions of the Combined Work that, considered in isolation, are
+based on the Application, and not on the Linked Version.
+
+  The "Corresponding Application Code" for a Combined Work means the
+object code and/or source code for the Application, including any data
+and utility programs needed for reproducing the Combined Work from the
+Application, but excluding the System Libraries of the Combined Work.
+
+  1. Exception to Section 3 of the GNU GPL.
+
+  You may convey a covered work under sections 3 and 4 of this License
+without being bound by section 3 of the GNU GPL.
+
+  2. Conveying Modified Versions.
+
+  If you modify a copy of the Library, and, in your modifications, a
+facility refers to a function or data to be supplied by an Application
+that uses the facility (other than as an argument passed when the
+facility is invoked), then you may convey a copy of the modified
+version:
+
+   a) under this License, provided that you make a good faith effort to
+   ensure that, in the event an Application does not supply the
+   function or data, the facility still operates, and performs
+   whatever part of its purpose remains meaningful, or
+
+   b) under the GNU GPL, with none of the additional permissions of
+   this License applicable to that copy.
+
+  3. Object Code Incorporating Material from Library Header Files.
+
+  The object code form of an Application may incorporate material from
+a header file that is part of the Library.  You may convey such object
+code under terms of your choice, provided that, if the incorporated
+material is not limited to numerical parameters, data structure
+layouts and accessors, or small macros, inline functions and templates
+(ten or fewer lines in length), you do both of the following:
+
+   a) Give prominent notice with each copy of the object code that the
+   Library is used in it and that the Library and its use are
+   covered by this License.
+
+   b) Accompany the object code with a copy of the GNU GPL and this license
+   document.
+
+  4. Combined Works.
+
+  You may convey a Combined Work under terms of your choice that,
+taken together, effectively do not restrict modification of the
+portions of the Library contained in the Combined Work and reverse
+engineering for debugging such modifications, if you also do each of
+the following:
+
+   a) Give prominent notice with each copy of the Combined Work that
+   the Library is used in it and that the Library and its use are
+   covered by this License.
+
+   b) Accompany the Combined Work with a copy of the GNU GPL and this license
+   document.
+
+   c) For a Combined Work that displays copyright notices during
+   execution, include the copyright notice for the Library among
+   these notices, as well as a reference directing the user to the
+   copies of the GNU GPL and this license document.
+
+   d) Do one of the following:
+
+       0) Convey the Minimal Corresponding Source under the terms of this
+       License, and the Corresponding Application Code in a form
+       suitable for, and under terms that permit, the user to
+       recombine or relink the Application with a modified version of
+       the Linked Version to produce a modified Combined Work, in the
+       manner specified by section 6 of the GNU GPL for conveying
+       Corresponding Source.
+
+       1) Use a suitable shared library mechanism for linking with the
+       Library.  A suitable mechanism is one that (a) uses at run time
+       a copy of the Library already present on the user's computer
+       system, and (b) will operate properly with a modified version
+       of the Library that is interface-compatible with the Linked
+       Version.
+
+   e) Provide Installation Information, but only if you would otherwise
+   be required to provide such information under section 6 of the
+   GNU GPL, and only to the extent that such information is
+   necessary to install and execute a modified version of the
+   Combined Work produced by recombining or relinking the
+   Application with a modified version of the Linked Version. (If
+   you use option 4d0, the Installation Information must accompany
+   the Minimal Corresponding Source and Corresponding Application
+   Code. If you use option 4d1, you must provide the Installation
+   Information in the manner specified by section 6 of the GNU GPL
+   for conveying Corresponding Source.)
+
+  5. Combined Libraries.
+
+  You may place library facilities that are a work based on the
+Library side by side in a single library together with other library
+facilities that are not Applications and are not covered by this
+License, and convey such a combined library under terms of your
+choice, if you do both of the following:
+
+   a) Accompany the combined library with a copy of the same work based
+   on the Library, uncombined with any other library facilities,
+   conveyed under the terms of this License.
+
+   b) Give prominent notice with the combined library that part of it
+   is a work based on the Library, and explaining where to find the
+   accompanying uncombined form of the same work.
+
+  6. Revised Versions of the GNU Lesser General Public License.
+
+  The Free Software Foundation may publish revised and/or new versions
+of the GNU Lesser General Public License from time to time. Such new
+versions will be similar in spirit to the present version, but may
+differ in detail to address new problems or concerns.
+
+  Each version is given a distinguishing version number. If the
+Library as you received it specifies that a certain numbered version
+of the GNU Lesser General Public License "or any later version"
+applies to it, you have the option of following the terms and
+conditions either of that published version or of any later version
+published by the Free Software Foundation. If the Library as you
+received it does not specify a version number of the GNU Lesser
+General Public License, you may choose any version of the GNU Lesser
+General Public License ever published by the Free Software Foundation.
+
+  If the Library as you received it specifies that a proxy can decide
+whether future versions of the GNU Lesser General Public License shall
+apply, that proxy's public statement of acceptance of any version is
+permanent authorization for you to choose that version for the
+Library.
+"""
+import heapq, logging, math
 from itertools import *
 from collections import namedtuple
 
 log = logging.getLogger("__name__")
+# log.setLevel(logging.ERROR)
 
 EPSILON = 0.00001
 
@@ -51,25 +228,81 @@ def _window(lst):
 	return zip(prevs, items, nexts)
 
 
-def _cross(a, b):
-	res = a.x * b.y - b.x * a.y
-	return res
+def _add(*vecs: tuple[float]) -> tuple[float]:
+	return ( sum([ vec[0] for vec in vecs ]), sum([ vec[1] for vec in vecs ]) )
+
+def _sub(v1: tuple[float], v2: tuple[float]) -> tuple[float]:
+	return ( v1[0] - v2[0], v1[1] - v2[1] )
+
+def _cross(v1: tuple[float], v2: tuple[float]) -> float:
+	return v1[0] * v2[1] - v2[0] * v1[1]
+
+def _dot(v1: tuple[float], v2: tuple[float]) -> float:
+	return v1[0] * v2[0] + v1[1] * v2[1]
+
+def _norm(v: tuple[float]) -> float:
+	x, y = v
+	return math.sqrt(x**2 + y**2)
+
+def _equals(pt1: tuple[float], pt2: tuple[float]) -> bool:
+	return pt1[0] == pt2[0] and pt1[1] == pt2[1]
+
+def _approximately_equals(pt1: tuple[float], pt2: tuple[float]) -> bool:
+	if _equals(pt1, pt2): return True
+	if _norm(_sub(pt1, pt2)) <= max(_norm(pt1), _norm(pt2)) * 0.001:
+		return True
+	return False
+
+def _normalize(pt: tuple[float]) -> tuple[float]:
+	norm = _norm(pt)
+	if norm == 0: return pt
+	return ( pt[0]/norm, pt[1]/norm )
+
+def _normalize_contour(contour: list[tuple[float]]) -> list[tuple[float]]:
+	return [ pt for prev, pt, next in _window(contour) 
+		if not (_equals(pt, next) or \
+			_equals(_normalize(_sub(pt, prev)), _normalize(_sub(next, pt)))) ]
+
+def _vector_of(line: tuple[tuple[float]]) -> tuple[float]:
+	pt1, pt2 = line
+	return _sub(pt2, pt1)
+
+def _times(v: tuple[float], m: float) -> tuple[float]:
+	return ( m*v[0], m*v[1] )
+
+def _intersect(l1: tuple[tuple[float]], l2: tuple[tuple[float]], type1: str = 'l', type2: str = 'l'):
+	p1, _ = l1; q1, _ = l2
+	r = _vector_of(l1); s = _vector_of(l2)
+	r_cross_s = _cross(r, s)
+	# Parallel
+	if r_cross_s == 0: return None
+	q1_p1 = _sub(q1, p1)
+	q1_p1_cross_r = _cross(q1_p1, r)
+	q1_p1_cross_s = _cross(q1_p1, s)
+	t = q1_p1_cross_s/r_cross_s
+	u = q1_p1_cross_r/r_cross_s
+	x = p1[0] + t*r[0]; y = p1[1] + t*r[1]
+	if type1 == 's': 
+		if t < 0 or t > 1: return None
+	elif type1 == 'r':
+		if t < 0: return None
+	if type2 == 's':
+		if u < 0 or u > 1: return None
+	elif type2 == 'r':
+		if u < 0: return None
+	return (x, y)
 
 
-def _approximately_equals(a, b):
-	return a == b or (abs(a - b) <= max(abs(a), abs(b)) * 0.001)
+def _distance_to(line: tuple[tuple[float]], pt: tuple[float]) -> float:
+	norm = _norm(_vector_of(line))
+	if norm == 0: return _norm(_sub(line[0], pt))
+	pt1, pt2 = line
+	return abs((pt2[0]-pt1[0])*(pt1[1]-pt[1])-(pt1[0]-pt[0])*(pt2[1]-pt1[1]))/norm
 
+def _distance(pt1: tuple[float], pt2: tuple[float]):
+	return _norm(_sub(pt1, pt2))
 
-def _approximately_same(point_a, point_b):
-	return _approximately_equals(point_a.x, point_b.x) and _approximately_equals(point_a.y, point_b.y)
-
-
-def _normalize_contour(contour):
-	contour = [Point2(float(x), float(y)) for (x, y) in contour]
-	return [point for prev, point, next in _window(contour) if not (point == next or (point-prev).normalized() == (next - point).normalized())]
-
-
-class _SplitEvent(namedtuple("_SplitEvent", "distance, intersection_point, vertex, opposite_edge")):
+class _SplitEvent(namedtuple("_SplitEvent", ["distance", "intersection_point", "vertex", "opposite_edge"])):
 	__slots__ = ()
 
 	def __lt__(self, other):
@@ -78,8 +311,7 @@ class _SplitEvent(namedtuple("_SplitEvent", "distance, intersection_point, verte
 	def __str__(self):
 		return "{} Split event @ {} from {} to {}".format(self.distance, self.intersection_point, self.vertex, self.opposite_edge)
 
-
-class _EdgeEvent(namedtuple("_EdgeEvent", "distance intersection_point vertex_a vertex_b")):
+class _EdgeEvent(namedtuple("_EdgeEvent", ["distance", "intersection_point", "vertex_a", "vertex_b"])):
 	__slots__ = ()
 
 	def __lt__(self, other):
@@ -89,13 +321,13 @@ class _EdgeEvent(namedtuple("_EdgeEvent", "distance intersection_point vertex_a 
 		return "{} Edge event @ {} between {} and {}".format(self.distance, self.intersection_point, self.vertex_a, self.vertex_b)
 
 
-_OriginalEdge = namedtuple("_OriginalEdge", "edge bisector_left, bisector_right")
+_OriginalEdge = namedtuple("_OriginalEdge", ["edge", "bisector_left", "bisector_right"])
 
-Subtree = namedtuple("Subtree", "source, height, sinks")
+Subtree = namedtuple("Subtree", ["source", "height", "sinks"])
 
 
 class _LAVertex:
-	def __init__(self, point, edge_left, edge_right, direction_vectors=None):
+	def __init__(self, point: tuple[float], edge_left: tuple[tuple[float]], edge_right: tuple[tuple[float]], direction_vectors=None):
 		self.point = point
 		self.edge_left = edge_left
 		self.edge_right = edge_right
@@ -104,14 +336,16 @@ class _LAVertex:
 		self.lav = None
 		self._valid = True  # TODO this might be handled better. Maybe membership in lav implies validity?
 
-		creator_vectors = (edge_left.v.normalized() * -1, edge_right.v.normalized())
+		creator_vectors = (
+			_times(_normalize(_vector_of(edge_left)), -1),
+			_normalize(_vector_of(edge_right))
+		)
 		if direction_vectors is None:
 			direction_vectors = creator_vectors
 
 		self._is_reflex = (_cross(*direction_vectors)) < 0
-		self._bisector = Ray2(self.point, operator.add(*creator_vectors) * (-1 if self.is_reflex else 1))
+		self._bisector = (self.point, _add(self.point, (_times(_add(*creator_vectors), (-1 if self.is_reflex else 1)))))
 		log.info("Created vertex %s", self.__repr__())
-		_debug.line((self.bisector.p.x, self.bisector.p.y, self.bisector.p.x + self.bisector.v.x * 100, self.bisector.p.y + self.bisector.v.y * 100), fill="blue")
 
 	@property
 	def bisector(self):
@@ -132,7 +366,7 @@ class _LAVertex:
 			# split events happen when a vertex hits an opposite edge, splitting the polygon in two.
 			log.debug("looking for split candidates for vertex %s", self)
 			for edge in self.original_edges:
-				if edge.edge == self.edge_left or edge.edge == self.edge_right:
+				if edge.edge is self.edge_left or edge.edge is self.edge_right:
 					continue
 
 				log.debug("\tconsidering EDGE %s", edge)
@@ -141,53 +375,51 @@ class _LAVertex:
 				# angle between the tested edge and any one of our own edges.
 
 				# we choose the "less parallel" edge (in order to exclude a potentially parallel edge)
-				leftdot = abs(self.edge_left.v.normalized().dot(edge.edge.v.normalized()))
-				rightdot = abs(self.edge_right.v.normalized().dot(edge.edge.v.normalized()))
+				leftdot = abs(_dot(_normalize(_vector_of(self.edge_left)), _normalize(_vector_of(edge.edge))))
+				rightdot = abs(_dot(_normalize(_vector_of(self.edge_right)), _normalize(_vector_of(edge.edge))))
 				selfedge = self.edge_left if leftdot < rightdot else self.edge_right
-				otheredge = self.edge_left if leftdot > rightdot else self.edge_right
 
-				i = Line2(selfedge).intersect(Line2(edge.edge))
+				i = _intersect(selfedge, edge.edge, 'l', 's')
 				if i is not None and not _approximately_equals(i, self.point):
 					# locate candidate b
-					linvec = (self.point - i).normalized()
-					edvec = edge.edge.v.normalized()
-					if linvec.dot(edvec) < 0:
-						edvec = -edvec
+					linvec = _normalize(_sub(self.point, i))
+					edvec =  _normalize(_vector_of(edge.edge))
+					if _dot(linvec, edvec) < 0:
+						edvec = _sub((0, 0), edvec)
 
-					bisecvec = edvec + linvec
-					if abs(bisecvec) == 0:
+					bisecvec = _add(edvec, linvec)
+					if _norm(bisecvec) == 0:
 						continue
-					bisector = Line2(i, bisecvec)
-					b = bisector.intersect(self.bisector)
+					bisector = (i, _add(i, bisecvec))
+					b = _intersect(bisector, self.bisector, 'r', 'r')
 
-					if b is None:
-						continue
+					if b is None: continue
 
 					# check eligibility of b
 					# a valid b should lie within the area limited by the edge and the bisectors of its two vertices:
-					xleft	= _cross(edge.bisector_left.v.normalized(), (b - edge.bisector_left.p).normalized()) > -EPSILON
-					xright	= _cross(edge.bisector_right.v.normalized(), (b - edge.bisector_right.p).normalized()) < EPSILON
-					xedge	= _cross(edge.edge.v.normalized(), (b - edge.edge.p).normalized()) < EPSILON
+					xleft	= _cross(_normalize(_vector_of(edge.bisector_left)), _normalize(_sub(b, edge.bisector_left[0]))) > -EPSILON
+					xright	= _cross(_normalize(_vector_of(edge.bisector_right)), _normalize(_sub(b, edge.bisector_right[0]))) < EPSILON
+					xedge	= _cross(_normalize(_vector_of(edge.edge)), _normalize(_sub(b, edge.edge[0]))) < EPSILON
 
 					if not (xleft and xright and xedge):
 						log.debug("\t\tDiscarded candidate %s (%s-%s-%s)", b, xleft, xright, xedge)
 						continue
 
 					log.debug("\t\tFound valid candidate %s", b)
-					events.append(_SplitEvent(Line2(edge.edge).distance(b), b, self, edge.edge))
+					events.append(_SplitEvent(_distance_to(edge.edge, b), b, self, edge.edge))
 
-		i_prev = self.bisector.intersect(self.prev.bisector)
-		i_next = self.bisector.intersect(self.next.bisector)
+		i_prev = _intersect(self.bisector, self.prev.bisector, 'r', 'r')
+		i_next = _intersect(self.bisector, self.next.bisector, 'r', 'r')
 
 		if i_prev is not None:
-			events.append(_EdgeEvent(Line2(self.edge_left).distance(i_prev), i_prev, self.prev, self))
+			events.append(_EdgeEvent(_distance_to(self.edge_left, i_prev), i_prev, self.prev, self))
 		if i_next is not None:
-			events.append(_EdgeEvent(Line2(self.edge_right).distance(i_next), i_next, self, self.next))
+			events.append(_EdgeEvent(_distance_to(self.edge_right, i_next), i_next, self, self.next))
 
 		if not events:
 			return None
 
-		ev = min(events, key=lambda event: self.point.distance(event.intersection_point))
+		ev = min(events, key=lambda event: _distance(self.point, event.intersection_point))
 
 		log.info("Generated new event for %s: %s", self, ev)
 		return ev
@@ -203,24 +435,23 @@ class _LAVertex:
 		return self._valid
 
 	def __str__(self):
-		return "Vertex ({:.2f};{:.2f})".format(self.point.x, self.point.y)
+		return "Vertex ({:.2f};{:.2f})".format(self.point[0], self.point[1])
 
 	def __repr__(self):
 		return "Vertex ({}) ({:.2f};{:.2f}), bisector {}, edges {} {}".format("reflex" if self.is_reflex else "convex",
-																			  self.point.x, self.point.y, self.bisector,
+																			  self.point[0], self.point[1], self.bisector,
 																			  self.edge_left, self.edge_right)
 
 
 class _SLAV:
-	def __init__(self, polygon, holes):
-		contours = [_normalize_contour(polygon)]
-		contours.extend([_normalize_contour(hole) for hole in holes])
+	def __init__(self, polygons):
+		contours = [_normalize_contour(polygon) for polygon in polygons]
 
 		self._lavs = [_LAV.from_polygon(contour, self) for contour in contours]
 
 		# store original polygon edges for calculating split events
 		self._original_edges = [
-			_OriginalEdge(LineSegment2(vertex.prev.point, vertex.point), vertex.prev.bisector, vertex.bisector)
+			_OriginalEdge((vertex.prev.point, vertex.point), vertex.prev.bisector, vertex.bisector)
 			for vertex in chain.from_iterable(self._lavs)
 		]
 
@@ -239,7 +470,7 @@ class _SLAV:
 		events = []
 
 		lav = event.vertex_a.lav
-		if event.vertex_a.prev == event.vertex_b.next:
+		if event.vertex_a.prev is event.vertex_b.next:
 			log.info("%.2f Peak event at intersection %s from <%s,%s,%s> in %s", event.distance,
 					 event.intersection_point, event.vertex_a, event.vertex_b, event.vertex_a.prev, lav)
 			self._lavs.remove(lav)
@@ -268,20 +499,19 @@ class _SLAV:
 		vertices = []
 		x = None  # right vertex
 		y = None  # left vertex
-		norm = event.opposite_edge.v.normalized()
+		norm = _normalize(_vector_of(event.opposite_edge))
 		for v in chain.from_iterable(self._lavs):
 			log.debug("%s in %s", v, v.lav)
-			if norm == v.edge_left.v.normalized() and event.opposite_edge.p == v.edge_left.p:
+			if _equals(norm, _normalize(_vector_of(v.edge_left))) and _equals(event.opposite_edge[0], v.edge_left[0]):
 				x = v
 				y = x.prev
-			elif norm == v.edge_right.v.normalized() and event.opposite_edge.p == v.edge_right.p:
+			elif _equals(norm, _normalize(_vector_of(v.edge_right))) and _equals(event.opposite_edge[0], v.edge_right[0]):
 				y = v
 				x = y.next
 
 			if x:
-				xleft	= _cross(y.bisector.v.normalized(), (event.intersection_point - y.point).normalized()) >= -EPSILON
-				xright	= _cross(x.bisector.v.normalized(), (event.intersection_point - x.point).normalized()) <= EPSILON
-				log.debug("Vertex %s holds edge as %s edge (%s, %s)", v, ("left" if x == v else "right"), xleft, xright)
+				xleft	= _cross(_normalize(_vector_of(y.bisector)), _normalize(_sub(event.intersection_point, y.point))) >= -EPSILON
+				xright	= _cross(_normalize(_vector_of(x.bisector)), _normalize(_sub(event.intersection_point, x.point))) <= EPSILON
 
 				if xleft and xright:
 					break
@@ -348,7 +578,7 @@ class _LAV:
 		lav = cls(slav)
 		for prev, point, next in _window(polygon):
 			lav._len += 1
-			vertex = _LAVertex(point, LineSegment2(prev, point), LineSegment2(point, next))
+			vertex = _LAVertex(point, (prev, point), (point, next))
 			vertex.lav = lav
 			if lav.head is None:
 				lav.head = vertex
@@ -373,13 +603,13 @@ class _LAV:
 		assert vertex.lav is self, "Tried to invalidate a vertex that's not mine"
 		log.debug("Invalidating %s", vertex)
 		vertex._valid = False
-		if self.head == vertex:
+		if self.head is vertex:
 			self.head = self.head.next
 		vertex.lav = None
 
 	def unify(self, vertex_a, vertex_b, point):
 		replacement = _LAVertex(point, vertex_a.edge_left, vertex_b.edge_right,
-								(vertex_b.bisector.v.normalized(), vertex_a.bisector.v.normalized()))
+								(_normalize(_vector_of(vertex_b.bisector)), _normalize(_vector_of(vertex_a.bisector))))
 		replacement.lav = self
 
 		if self.head in [vertex_a, vertex_b]:
@@ -410,7 +640,7 @@ class _LAV:
 		while True:
 			yield cur
 			cur = cur.next
-			if cur == self.head:
+			if cur is self.head:
 				return
 
 	def _show(self):
@@ -418,7 +648,7 @@ class _LAV:
 		while True:
 			print(cur.__repr__())
 			cur = cur.next
-			if cur == self.head:
+			if cur is self.head:
 				break
 
 
@@ -468,8 +698,7 @@ def _merge_sources(skeleton):
 	for i in reversed(to_remove):
 		skeleton.pop(i)
 
-			
-def skeletonize(polygon, holes=None):
+def skeletonize(polygons):
 	"""
 	Compute the straight skeleton of a polygon.
 
@@ -481,7 +710,7 @@ def skeletonize(polygon, holes=None):
 	Returns the straight skeleton as a list of "subtrees", which are in the form of (source, height, sinks),
 	where source is the highest points, height is its height, and sinks are the point connected to the source.
 	"""
-	slav = _SLAV(polygon, holes)
+	slav = _SLAV(polygons)
 	output = []
 	prioque = _EventQueue()
 
@@ -490,7 +719,6 @@ def skeletonize(polygon, holes=None):
 			prioque.put(vertex.next_event())
 
 	while not (prioque.empty() or slav.empty()):
-		log.debug("SLAV is %s", [repr(lav) for lav in slav])
 		i = prioque.get()
 		if isinstance(i, _EdgeEvent):
 			if not i.vertex_a.is_valid or not i.vertex_b.is_valid:
@@ -509,7 +737,7 @@ def skeletonize(polygon, holes=None):
 		if arc is not None:
 			output.append(arc)
 			for sink in arc.sinks:
-				_debug.line((arc.source.x, arc.source.y, sink.x, sink.y), fill="red")
+				_debug.line((arc.source[0], arc.source[1], sink[0], sink[1]), fill="red")
 
 			_debug.show()
 	_merge_sources(output)
