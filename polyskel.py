@@ -190,6 +190,7 @@ log = logging.getLogger("__name__")
 # log.setLevel(logging.ERROR)
 
 EPSILON = 0.00001
+MAX_ITERATION = 10000
 
 class Debug:
 	def __init__(self, image):
@@ -637,7 +638,7 @@ class _LAV:
 
 	def __iter__(self):
 		cur = self.head
-		while True:
+		for _ in range(MAX_ITERATION):
 			yield cur
 			cur = cur.next
 			if cur is self.head:
@@ -645,7 +646,7 @@ class _LAV:
 
 	def _show(self):
 		cur = self.head
-		while True:
+		for _ in range(MAX_ITERATION):
 			print(cur.__repr__())
 			cur = cur.next
 			if cur is self.head:
@@ -718,7 +719,12 @@ def skeletonize(polygons):
 		for vertex in lav:
 			prioque.put(vertex.next_event())
 
+	n_iter = 0
 	while not (prioque.empty() or slav.empty()):
+		n_iter += 1
+		if n_iter > MAX_ITERATION:
+			log.error("Maximum number of iterations reached")
+			break
 		i = prioque.get()
 		if isinstance(i, _EdgeEvent):
 			if not i.vertex_a.is_valid or not i.vertex_b.is_valid:
